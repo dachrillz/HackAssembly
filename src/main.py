@@ -25,6 +25,6 @@ if __name__ == '__main__':
             #Write to the file
                 coded_instruction = code.code(parsed_object)
                 print(coded_instruction)
-            #output_file.write(parsed_object)
+                output_file.write(coded_instruction + '\n')
 
     output_file.close()
