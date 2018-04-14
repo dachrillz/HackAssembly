@@ -1,10 +1,16 @@
 
 import commands
 
-def code(parsed_object):
+def code(parsed_object, st, first_pass = False):
+    temp = parsed_object.get_content()
 
-    if isinstance(parsed_object, commands.A_Command):      
-        temp = parsed_object.get_content()
+    if isinstance(parsed_object, commands.A_Command):
+
+        if not first_pass: #if this is not the first pass, look up variables in the table
+            temp = look_up_label(temp, st)
+
+        print(temp)
+
         temp = bin(int(temp))[2:]
         temp = temp.zfill(16) #pad with zeros
         
@@ -13,6 +19,7 @@ def code(parsed_object):
 
     elif isinstance(parsed_object, commands.C_Command):
         temp = parsed_object.get_content()
+
 
         if temp[2] == '=':
 
@@ -25,16 +32,25 @@ def code(parsed_object):
 
 
         raise Exception("C-command was neither = or ; " 
-                        "This was the string: " + str(temp))
+                        "This was the string that threw the error: " + str(temp))
         
 
-
-    elif isinstance(parsed_object, commands.L_Command):
-        pass
-
+def look_up_label(label,st):
+    
+    try:
+        temp = int(label)
+        return temp
+    except:
+        if st.is_in(label):
+            return st.get_symbol(label)
+        else:
+            print(label)
+            st.add_variable_to_next_free_ram(label)
+            return st.get_symbol(label)
+        
 
 table_of_code = {
-    "0"     : "0101010",
+    "0"     :  "0101010",
     "1"     :  "0111111",
     "-1"    :  "0111010",
     "D"     :  "0001100",
